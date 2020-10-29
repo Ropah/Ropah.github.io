@@ -1,0 +1,360 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<title>New Help</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css"> 
+<!--
+body{margin: 5px;} 
+.selected {font-weight: normal;background-color: #E2E2E2;padding:0px,2px,0px,2px;}
+.unselected { font-weight: normal;padding:0px,2px,0px,2px;}
+.hand { cursor: hand; }
+.p {height: 16px;width: 16px;vertical-align: middle;border: 0;}
+div,body { font-family: Tahoma, Verdana; font-size: 11px; }
+A:link {text-decoration: none; color:#000000}
+A:visited {text-decoration: none; color: #000000}
+A:active {text-decoration: none; color: #000000 }
+A:hover {text-decoration: none; color: #FF0000 }
+
+-->
+</style>
+
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+var cl,pn,pm,bl;
+var path = 'icons/';
+var pos = 0;
+var icon;
+var tar = 'content';
+var display;
+var imgi;
+var AutoCollapse;
+var LastSelected = -1;
+var loaded = false;
+var max;
+var divlist;
+
+function SetEnv(v,a){
+
+if(v==0){ 
+	pn = [['daplus.gif','daminus.gif'],['tplus.gif','tminus.gif'],['uaplus.gif','uaminus.gif'],['splus.gif','sminus.gif']];
+	PreloadImg('downangle.gif','tshaped.gif','upangle.gif','sline.gif','daplus.gif','daminus.gif','tplus.gif','tminus.gif','uaplus.gif','uaminus.gif','splus.gif','sminus.gif','blank.gif','line.gif');
+}else{
+	pn = [['plus.gif','minus.gif']];
+	PreloadImg('plus.gif','minus.gif','blank.gif');
+
+}
+AutoCollapse = a;
+}
+
+ function PreloadImg(){
+if (document.images) { 
+	var imgs = PreloadImg.arguments; 
+	var pload = new Array();
+	for (var i=0; i<imgs.length; i++) { 
+		pload[i] = new Image; 
+		pload[i].src = path + imgs[i]; 
+	} 
+} 
+ } 
+
+function get(o){
+var x;
+if(document.all) x=document.all[o]; 
+if(document.getElementById) x=document.getElementById(o);
+
+return x;
+}
+
+
+function pnImg(img){
+var i,j;
+for(i=0;i<=3;i++){
+	for(j=0;j<=1;j++){
+	if(img.substr(img.lastIndexOf('/') + 1)== pn[i][j]){
+		return i;
+	}
+	}
+}
+}
+function icon(img){
+var f;
+f = img.substr(img.lastIndexOf('/') + 1);
+if( f=='1.gif' || f=='2.gif'){
+	return ['1.gif','2.gif'];
+}
+if( f=='3.gif' || f=='4.gif'){
+	return ['3.gif','4.gif'];
+}
+if( f=='5.gif' || f=='6.gif'){
+	return ['5.gif','6.gif'];
+}
+if( f=='7.gif' || f=='8.gif'){
+	return ['7.gif','8.gif'];
+}
+return [f,f];
+}
+
+function show(id){
+get('d' + id).style.display='block';
+if(get('imgn' + id )) get('imgn' + id ).src= path + pn[pnImg(get('imgn' + id ).src)][1];
+get('img' + id ).src= path + icon(get('img' + id ).src)[1];
+
+}
+
+function collapse(id){
+get('d' + id ).style.display='none';
+if(get('imgn' + id )) get('imgn' + id ).src= path + pn[pnImg(get('imgn' + id ).src)][0];
+get('img' + id ).src= path + icon(get('img' + id ).src)[0];
+
+}
+
+function collapseAll(){
+var i;
+var o;
+for(i=0;i<=divlist.length-1;i++){
+	if(o=get('d' + divlist[i])){
+		if(o.style.display!='none'){ 
+			collapse(divlist[i]);
+		}
+	}
+}
+}
+
+function showAll(){
+var i;
+var o;
+for(i=0;i<=divlist.length-1;i++){
+	if(o=get('d' + divlist[i])){
+		if(o.style.display!='block'){ 
+			show(divlist[i]);
+		}
+	}
+}
+}
+
+function unselectAll(){
+var i=0;
+while(get("l" + i)){
+	get("l" + i).className = "unselected";
+	i++;
+}
+}
+
+function clickNode(index){
+var e;
+
+e = get("l" + index);
+if(e==null) return;
+e = e.parentNode;
+if(e.nodeName == 'A'){
+	if(e.href!= window.location.href + '#'){
+		parent.parent.content.location.href = e.href;
+	}else{
+		selectNode(index);
+	}
+	e.onclick;
+}
+}
+
+function showParent(ele){
+var e;
+e = ele.parentNode;
+
+if(e==null) return;
+
+if(e.nodeName == 'DIV'){
+	if(e.id!='') show(e.id.substring(1,e.id.length ));
+}else if(e.nodeName == 'A'){
+
+}
+showParent(e);
+}
+
+function showNode(index){
+showParent(get("l" + index));
+LinkClick(index);
+}
+
+function selectNode(index){
+if(LastSelected!=index){
+//collapseAll();
+showParent(get("l" + index));
+LinkClick(index);
+get('l' + index).scrollIntoView(true);
+
+
+//alert(get('l' + index).offsetHeight + '|' + document.body.clientHeight + '|' + document.body.offsetHeight);
+window.scrollTo(0,document.body.scrollTop); // - document.body.clientHeight /3);
+}
+}
+
+
+function NodeClick(id){
+if(get('d' + id ).style.display=='none'){
+	show(id);
+}else{
+	collapse(id);
+}
+return false;
+}
+
+function LinkDblClick(id){
+if(!AutoCollapse){
+	if(get('d' + id ).style.display=='none'){
+		show(id);
+	}else{
+		collapse(id);
+	}
+}
+return false;
+}
+
+function LinkClick(index,hasChild,r){
+if(AutoCollapse && hasChild){
+	if(get('d' + index ).style.display=='none'){
+		collapseAll()
+		showParent(get('l' + index));
+		show(index);
+	}else{
+		collapseAll()
+		showParent(get('l' + index));	
+		collapse(index);
+	}
+}
+if(LastSelected!=-1){
+	get('l' + LastSelected).className = "unselected";
+}
+get('l' + index).className = "selected";
+LastSelected = index;
+return r;
+}
+
+function body_onmousemove(event){
+if(typeof(document.body.scrollTop)!='undefined'){
+if(parseInt(event.clientX)<5){
+window.scroll(0,document.body.scrollTop);}}
+if(typeof(window.scrollY)!='undefined'){
+if(parseInt(event.clientX)<5){
+window.scrollTo(0,window.scrollY);}}
+}
+
+window.defaultStatus = '';
+
+function body_onload(){
+get('loading').style.display='none';
+loaded = true;
+if(parent.parent.content.document.readyState){
+	if(parent.parent.content.document.readyState == 'complete'){
+		try{parent.parent.content.syn();}catch(e){};
+	}
+}else{
+	if(parent.parent.contentLoaded){
+		try{parent.parent.content.syn();}catch(e){};
+	}
+}
+}
+
+//-->
+</SCRIPT>
+<script language="JavaScript" src="languages.js"></script>
+</head>
+
+<body bgcolor="#FFFFFF" onmousemove="body_onmousemove(event);" onload="body_onload();">
+<div id="loading"><font color="#FF0000" size="1"> Loading table of contents... 
+</font><br><br></div>
+<script>SetEnv(0,false)</script><div><nobr><img src="icons/downangle.gif" class="p"><a href="pages/introduction.html" onclick="return LinkClick('0',false,true)" target="content" title="Introduction" onmousemove="window.status='Introduction'"><img src="icons/11.gif" class="p"> <span id="l0" class="unselected">Introduction</span></a></nobr></div>
+<div><nobr><img src="icons/tshaped.gif" class="p"><a href="pages/implementation.html" onclick="return LinkClick('1',false,true)" target="content" title="Implementation            " onmousemove="window.status='Implementation            '"><img src="icons/11.gif" class="p"> <span id="l1" class="unselected">Implementation            </span></a></nobr></div>
+<div><nobr><img src="icons/tshaped.gif" class="p"><a href="pages/help.html" onclick="return LinkClick('2',false,true)" target="content" title="Help" onmousemove="window.status='Help'"><img src="icons/11.gif" class="p"> <span id="l2" class="unselected">Help</span></a></nobr></div>
+<div><nobr><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('3',false,true)" target="content" title="Contact Details" onmousemove="window.status='Contact Details'"><img src="icons/11.gif" class="p"> <span id="l3" class="unselected">Contact Details</span></a></nobr></div>
+<div><nobr><a href="#" onClick="return NodeClick('4')"><img id="imgn4" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('4',true,false)" onDblClick="return LinkDblClick('4')" target="content" title="Web Application - Client" onmousemove="window.status='Web Application - Client'"><img id="img4" src="icons/1.gif" class="p"> <span id="l4" class="unselected">Web Application - Client</span></a></nobr></div>
+<div id="d4" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('5')"><img id="imgn5" src="icons/tplus.gif" class="p"></a><a href="pages/client-registration.html" onclick="return LinkClick('5',true,true)" onDblClick="return LinkDblClick('5')" target="content" title="Client Registration" onmousemove="window.status='Client Registration'"><img id="img5" src="icons/1.gif" class="p"> <span id="l5" class="unselected">Client Registration</span></a></nobr></div>
+<div id="d5" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/register-new-client-page.html" onclick="return LinkClick('6',false,true)" target="content" title="Register New Client Page" onmousemove="window.status='Register New Client Page'"><img src="icons/11.gif" class="p"> <span id="l6" class="unselected">Register New Client Page</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('7',false,true)" target="content" title="Confirming Email" onmousemove="window.status='Confirming Email'"><img src="icons/11.gif" class="p"> <span id="l7" class="unselected">Confirming Email</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/account-confirmed-information.html" onclick="return LinkClick('8',false,true)" target="content" title="Account Confirmed Information" onmousemove="window.status='Account Confirmed Information'"><img src="icons/11.gif" class="p"> <span id="l8" class="unselected">Account Confirmed Information</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/welcome-email.html" onclick="return LinkClick('9',false,true)" target="content" title="Welcome Email" onmousemove="window.status='Welcome Email'"><img src="icons/11.gif" class="p"> <span id="l9" class="unselected">Welcome Email</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('10')"><img id="imgn10" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('10',true,false)" onDblClick="return LinkDblClick('10')" target="content" title="Login Process" onmousemove="window.status='Login Process'"><img id="img10" src="icons/1.gif" class="p"> <span id="l10" class="unselected">Login Process</span></a></nobr></div>
+<div id="d10" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/login-page.html" onclick="return LinkClick('11',false,true)" target="content" title="Login Page" onmousemove="window.status='Login Page'"><img src="icons/11.gif" class="p"> <span id="l11" class="unselected">Login Page</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/43-forgot-password.html" onclick="return LinkClick('12',false,true)" target="content" title="4.3 Forgot Password" onmousemove="window.status='4.3 Forgot Password'"><img src="icons/11.gif" class="p"> <span id="l12" class="unselected">4.3 Forgot Password</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('13')"><img id="imgn13" src="icons/tplus.gif" class="p"></a><a href="pages/44-reset-password.html" onclick="return LinkClick('13',true,true)" onDblClick="return LinkDblClick('13')" target="content" title="4.4 Reset password" onmousemove="window.status='4.4 Reset password'"><img id="img13" src="icons/1.gif" class="p"> <span id="l13" class="unselected">4.4 Reset password</span></a></nobr></div>
+<div id="d13" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/reset-password-email.html" onclick="return LinkClick('14',false,true)" target="content" title="Reset Password Email" onmousemove="window.status='Reset Password Email'"><img src="icons/11.gif" class="p"> <span id="l14" class="unselected">Reset Password Email</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/change-password-page.html" onclick="return LinkClick('15',false,true)" target="content" title="Change password page" onmousemove="window.status='Change password page'"><img src="icons/11.gif" class="p"> <span id="l15" class="unselected">Change password page</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/45-client-dashboard.html" onclick="return LinkClick('16',false,true)" target="content" title="4.5 Client Dashboard" onmousemove="window.status='4.5 Client Dashboard'"><img src="icons/11.gif" class="p"> <span id="l16" class="unselected">4.5 Client Dashboard</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/46-navigation-bar.html" onclick="return LinkClick('17',false,true)" target="content" title="4.6 Navigation Bar" onmousemove="window.status='4.6 Navigation Bar'"><img src="icons/11.gif" class="p"> <span id="l17" class="unselected">4.6 Navigation Bar</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('18')"><img id="imgn18" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('18',true,false)" onDblClick="return LinkDblClick('18')" target="content" title="4.7 View Available Catalogues" onmousemove="window.status='4.7 View Available Catalogues'"><img id="img18" src="icons/1.gif" class="p"> <span id="l18" class="unselected">4.7 View Available Catalogues</span></a></nobr></div>
+<div id="d18" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/altitude-catalogue.html" onclick="return LinkClick('19',false,true)" target="content" title="Altitude Catalogue" onmousemove="window.status='Altitude Catalogue'"><img src="icons/11.gif" class="p"> <span id="l19" class="unselected">Altitude Catalogue</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('20')"><img id="imgn20" src="icons/tplus.gif" class="p"></a><a href="pages/48-client-details-management.html" onclick="return LinkClick('20',true,true)" onDblClick="return LinkDblClick('20')" target="content" title="4.8 Client Details Management" onmousemove="window.status='4.8 Client Details Management'"><img id="img20" src="icons/1.gif" class="p"> <span id="l20" class="unselected">4.8 Client Details Management</span></a></nobr></div>
+<div id="d20" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/update-details-page.html" onclick="return LinkClick('21',false,true)" target="content" title="Update Details Page" onmousemove="window.status='Update Details Page'"><img src="icons/11.gif" class="p"> <span id="l21" class="unselected">Update Details Page</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('22')"><img id="imgn22" src="icons/tplus.gif" class="p"></a><a href="pages/49-quotation-request-process.html" onclick="return LinkClick('22',true,true)" onDblClick="return LinkDblClick('22')" target="content" title="4.9 Quotation Request Process" onmousemove="window.status='4.9 Quotation Request Process'"><img id="img22" src="icons/1.gif" class="p"> <span id="l22" class="unselected">4.9 Quotation Request Process</span></a></nobr></div>
+<div id="d22" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/place-new-quotation-request-page.html" onclick="return LinkClick('23',false,true)" target="content" title="Place New Quotation Request Page" onmousemove="window.status='Place New Quotation Request Page'"><img src="icons/11.gif" class="p"> <span id="l23" class="unselected">Place New Quotation Request Page</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/quotation-request-with-no-print-job.html" onclick="return LinkClick('24',false,true)" target="content" title="Quotation Request with no Print Job" onmousemove="window.status='Quotation Request with no Print Job'"><img src="icons/11.gif" class="p"> <span id="l24" class="unselected">Quotation Request with no Print Job</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/quotation-request-with-a-print-job.html" onclick="return LinkClick('25',false,true)" target="content" title="Quotation Request with a print job" onmousemove="window.status='Quotation Request with a print job'"><img src="icons/11.gif" class="p"> <span id="l25" class="unselected">Quotation Request with a print job</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/items-in-quotation.html" onclick="return LinkClick('26',false,true)" target="content" title="Items in Quotation" onmousemove="window.status='Items in Quotation'"><img src="icons/11.gif" class="p"> <span id="l26" class="unselected">Items in Quotation</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('27')"><img id="imgn27" src="icons/tplus.gif" class="p"></a><a href="pages/410-view-quotations-requested.html" onclick="return LinkClick('27',true,true)" onDblClick="return LinkDblClick('27')" target="content" title="4.10 View Quotations Requested" onmousemove="window.status='4.10 View Quotations Requested'"><img id="img27" src="icons/1.gif" class="p"> <span id="l27" class="unselected">4.10 View Quotations Requested</span></a></nobr></div>
+<div id="d27" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/accepted-quotation-email.html" onclick="return LinkClick('28',false,true)" target="content" title="Accepted quotation email" onmousemove="window.status='Accepted quotation email'"><img src="icons/11.gif" class="p"> <span id="l28" class="unselected">Accepted quotation email</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/declined-quotation-email.html" onclick="return LinkClick('29',false,true)" target="content" title="Declined Quotation Email" onmousemove="window.status='Declined Quotation Email'"><img src="icons/11.gif" class="p"> <span id="l29" class="unselected">Declined Quotation Email</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('30',false,true)" target="content" title="Requested Quotations Page" onmousemove="window.status='Requested Quotations Page'"><img src="icons/11.gif" class="p"> <span id="l30" class="unselected">Requested Quotations Page</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('31',false,true)" target="content" title="4.11 View Orders Placed" onmousemove="window.status='4.11 View Orders Placed'"><img src="icons/11.gif" class="p"> <span id="l31" class="unselected">4.11 View Orders Placed</span></a></nobr></div>
+</div><div><nobr><a href="#" onClick="return NodeClick('32')"><img id="imgn32" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('32',true,false)" onDblClick="return LinkDblClick('32')" target="content" title="Web Application- Internal System" onmousemove="window.status='Web Application- Internal System'"><img id="img32" src="icons/1.gif" class="p"> <span id="l32" class="unselected">Web Application- Internal System</span></a></nobr></div>
+<div id="d32" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('33')"><img id="imgn33" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('33',true,false)" onDblClick="return LinkDblClick('33')" target="content" title="5.1 Owner Home View" onmousemove="window.status='5.1 Owner Home View'"><img id="img33" src="icons/1.gif" class="p"> <span id="l33" class="unselected">5.1 Owner Home View</span></a></nobr></div>
+<div id="d33" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/owner-dashboard-details.html" onclick="return LinkClick('34',false,true)" target="content" title="Owner Dashboard Details" onmousemove="window.status='Owner Dashboard Details'"><img src="icons/11.gif" class="p"> <span id="l34" class="unselected">Owner Dashboard Details</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/client-quotation-report.html" onclick="return LinkClick('35',false,true)" target="content" title="Client Quotation Report" onmousemove="window.status='Client Quotation Report'"><img src="icons/11.gif" class="p"> <span id="l35" class="unselected">Client Quotation Report</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/supplier-quotation-report.html" onclick="return LinkClick('36',false,true)" target="content" title="Supplier Quotation Report" onmousemove="window.status='Supplier Quotation Report'"><img src="icons/11.gif" class="p"> <span id="l36" class="unselected">Supplier Quotation Report</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/monthly-income-report.html" onclick="return LinkClick('37',false,true)" target="content" title="Monthly Income Report" onmousemove="window.status='Monthly Income Report'"><img src="icons/11.gif" class="p"> <span id="l37" class="unselected">Monthly Income Report</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/income-vs-expense-report.html" onclick="return LinkClick('38',false,true)" target="content" title="Income vs Expense Report" onmousemove="window.status='Income vs Expense Report'"><img src="icons/11.gif" class="p"> <span id="l38" class="unselected">Income vs Expense Report</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/monthly-expenses-report.html" onclick="return LinkClick('39',false,true)" target="content" title="Monthly Expenses Report" onmousemove="window.status='Monthly Expenses Report'"><img src="icons/11.gif" class="p"> <span id="l39" class="unselected">Monthly Expenses Report</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('40')"><img id="imgn40" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('40',true,false)" onDblClick="return LinkDblClick('40')" target="content" title="5.2 Client Management Process" onmousemove="window.status='5.2 Client Management Process'"><img id="img40" src="icons/1.gif" class="p"> <span id="l40" class="unselected">5.2 Client Management Process</span></a></nobr></div>
+<div id="d40" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('41')"><img id="imgn41" src="icons/uaplus.gif" class="p"></a><a href="pages/client-management-details.html" onclick="return LinkClick('41',true,true)" onDblClick="return LinkDblClick('41')" target="content" title="Client Management Details" onmousemove="window.status='Client Management Details'"><img id="img41" src="icons/1.gif" class="p"> <span id="l41" class="unselected">Client Management Details</span></a></nobr></div>
+<div id="d41" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/active-clients.html" onclick="return LinkClick('42',false,true)" target="content" title="Active Clients" onmousemove="window.status='Active Clients'"><img src="icons/11.gif" class="p"> <span id="l42" class="unselected">Active Clients</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/archived-clients.html" onclick="return LinkClick('43',false,true)" target="content" title="Archived Clients" onmousemove="window.status='Archived Clients'"><img src="icons/11.gif" class="p"> <span id="l43" class="unselected">Archived Clients</span></a></nobr></div>
+</div></div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('44')"><img id="imgn44" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('44',true,false)" onDblClick="return LinkDblClick('44')" target="content" title="5.3 Client Quotation Management Process" onmousemove="window.status='5.3 Client Quotation Management Process'"><img id="img44" src="icons/1.gif" class="p"> <span id="l44" class="unselected">5.3 Client Quotation Management Process</span></a></nobr></div>
+<div id="d44" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/client-quotation-management-details.html" onclick="return LinkClick('45',false,true)" target="content" title="Client Quotation Management Details" onmousemove="window.status='Client Quotation Management Details'"><img src="icons/11.gif" class="p"> <span id="l45" class="unselected">Client Quotation Management Details</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/requested-quotations.html" onclick="return LinkClick('46',false,true)" target="content" title="Requested Quotations" onmousemove="window.status='Requested Quotations'"><img src="icons/11.gif" class="p"> <span id="l46" class="unselected">Requested Quotations</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('47')"><img id="imgn47" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('47',true,false)" onDblClick="return LinkDblClick('47')" target="content" title="5.4 Client Order Management Process" onmousemove="window.status='5.4 Client Order Management Process'"><img id="img47" src="icons/1.gif" class="p"> <span id="l47" class="unselected">5.4 Client Order Management Process</span></a></nobr></div>
+<div id="d47" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/client-order-management-details.html" onclick="return LinkClick('48',false,true)" target="content" title="Client Order Management Details" onmousemove="window.status='Client Order Management Details'"><img src="icons/11.gif" class="p"> <span id="l48" class="unselected">Client Order Management Details</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('49')"><img id="imgn49" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('49',true,false)" onDblClick="return LinkDblClick('49')" target="content" title="5.5 Catalogue Item Management Process" onmousemove="window.status='5.5 Catalogue Item Management Process'"><img id="img49" src="icons/1.gif" class="p"> <span id="l49" class="unselected">5.5 Catalogue Item Management Process</span></a></nobr></div>
+<div id="d49" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('50')"><img id="imgn50" src="icons/uaplus.gif" class="p"></a><a href="pages/catalogue-item-management-details.html" onclick="return LinkClick('50',true,true)" onDblClick="return LinkDblClick('50')" target="content" title="Catalogue Item Management Details" onmousemove="window.status='Catalogue Item Management Details'"><img id="img50" src="icons/1.gif" class="p"> <span id="l50" class="unselected">Catalogue Item Management Details</span></a></nobr></div>
+<div id="d50" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-catalogue-item-size.html" onclick="return LinkClick('51',false,true)" target="content" title="Add Catalogue Item Size" onmousemove="window.status='Add Catalogue Item Size'"><img src="icons/11.gif" class="p"> <span id="l51" class="unselected">Add Catalogue Item Size</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/update-catalogue-item-size.html" onclick="return LinkClick('52',false,true)" target="content" title="Update Catalogue Item Size" onmousemove="window.status='Update Catalogue Item Size'"><img src="icons/11.gif" class="p"> <span id="l52" class="unselected">Update Catalogue Item Size</span></a></nobr></div>
+</div></div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('53')"><img id="imgn53" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('53',true,false)" onDblClick="return LinkDblClick('53')" target="content" title="5.6 Supplier Management" onmousemove="window.status='5.6 Supplier Management'"><img id="img53" src="icons/1.gif" class="p"> <span id="l53" class="unselected">5.6 Supplier Management</span></a></nobr></div>
+<div id="d53" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/suppliers-page.html" onclick="return LinkClick('54',false,true)" target="content" title="Suppliers Page" onmousemove="window.status='Suppliers Page'"><img src="icons/11.gif" class="p"> <span id="l54" class="unselected">Suppliers Page</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-new-supplier-page.html" onclick="return LinkClick('55',false,true)" target="content" title="Add New Supplier Page" onmousemove="window.status='Add New Supplier Page'"><img src="icons/11.gif" class="p"> <span id="l55" class="unselected">Add New Supplier Page</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-details-page1.html" onclick="return LinkClick('56',false,true)" target="content" title="Update Details Page" onmousemove="window.status='Update Details Page'"><img src="icons/11.gif" class="p"> <span id="l56" class="unselected">Update Details Page</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/add-supplier-catalogue-page.html" onclick="return LinkClick('57',false,true)" target="content" title="Add Supplier Catalogue Page" onmousemove="window.status='Add Supplier Catalogue Page'"><img src="icons/11.gif" class="p"> <span id="l57" class="unselected">Add Supplier Catalogue Page</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('58')"><img id="imgn58" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('58',true,false)" onDblClick="return LinkDblClick('58')" target="content" title="5.7 Supplier Quotation Management" onmousemove="window.status='5.7 Supplier Quotation Management'"><img id="img58" src="icons/1.gif" class="p"> <span id="l58" class="unselected">5.7 Supplier Quotation Management</span></a></nobr></div>
+<div id="d58" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/generated-supplier-quotations-page.html" onclick="return LinkClick('59',false,true)" target="content" title="Generated Supplier Quotations Page" onmousemove="window.status='Generated Supplier Quotations Page'"><img src="icons/11.gif" class="p"> <span id="l59" class="unselected">Generated Supplier Quotations Page</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/capture-quotation-price-page.html" onclick="return LinkClick('60',false,true)" target="content" title="Capture Quotation Price Page" onmousemove="window.status='Capture Quotation Price Page'"><img src="icons/11.gif" class="p"> <span id="l60" class="unselected">Capture Quotation Price Page</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('61')"><img id="imgn61" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('61',true,false)" onDblClick="return LinkDblClick('61')" target="content" title="5.8 Supplier Orders Management" onmousemove="window.status='5.8 Supplier Orders Management'"><img id="img61" src="icons/1.gif" class="p"> <span id="l61" class="unselected">5.8 Supplier Orders Management</span></a></nobr></div>
+<div id="d61" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/placed-supplier-orders-page.html" onclick="return LinkClick('62',false,true)" target="content" title="Placed Supplier Orders Page" onmousemove="window.status='Placed Supplier Orders Page'"><img src="icons/11.gif" class="p"> <span id="l62" class="unselected">Placed Supplier Orders Page</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/receive-supplier-order-page.html" onclick="return LinkClick('63',false,true)" target="content" title="Receive Supplier Order Page" onmousemove="window.status='Receive Supplier Order Page'"><img src="icons/11.gif" class="p"> <span id="l63" class="unselected">Receive Supplier Order Page</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('64')"><img id="imgn64" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('64',true,false)" onDblClick="return LinkDblClick('64')" target="content" title="5.9 Printing Management" onmousemove="window.status='5.9 Printing Management'"><img id="img64" src="icons/1.gif" class="p"> <span id="l64" class="unselected">5.9 Printing Management</span></a></nobr></div>
+<div id="d64" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('65')"><img id="imgn65" src="icons/tplus.gif" class="p"></a><a href="pages/print-sizes-page.html" onclick="return LinkClick('65',true,true)" onDblClick="return LinkDblClick('65')" target="content" title="Print Sizes Page" onmousemove="window.status='Print Sizes Page'"><img id="img65" src="icons/1.gif" class="p"> <span id="l65" class="unselected">Print Sizes Page</span></a></nobr></div>
+<div id="d65" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-print-size-page.html" onclick="return LinkClick('66',false,true)" target="content" title="Add Print Size Page" onmousemove="window.status='Add Print Size Page'"><img src="icons/11.gif" class="p"> <span id="l66" class="unselected">Add Print Size Page</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/update-print-size-page.html" onclick="return LinkClick('67',false,true)" target="content" title="Update Print Size Page" onmousemove="window.status='Update Print Size Page'"><img src="icons/11.gif" class="p"> <span id="l67" class="unselected">Update Print Size Page</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('68')"><img id="imgn68" src="icons/tplus.gif" class="p"></a><a href="pages/print-sides-page.html" onclick="return LinkClick('68',true,true)" onDblClick="return LinkDblClick('68')" target="content" title="Print Sides Page" onmousemove="window.status='Print Sides Page'"><img id="img68" src="icons/1.gif" class="p"> <span id="l68" class="unselected">Print Sides Page</span></a></nobr></div>
+<div id="d68" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-print-side-page.html" onclick="return LinkClick('69',false,true)" target="content" title="Add Print Side Page" onmousemove="window.status='Add Print Side Page'"><img src="icons/11.gif" class="p"> <span id="l69" class="unselected">Add Print Side Page</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/update-print-side-page.html" onclick="return LinkClick('70',false,true)" target="content" title="Update Print Side Page" onmousemove="window.status='Update Print Side Page'"><img src="icons/11.gif" class="p"> <span id="l70" class="unselected">Update Print Side Page</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('71')"><img id="imgn71" src="icons/tplus.gif" class="p"></a><a href="pages/print-colours-page.html" onclick="return LinkClick('71',true,true)" onDblClick="return LinkDblClick('71')" target="content" title="Print Colours Page" onmousemove="window.status='Print Colours Page'"><img id="img71" src="icons/1.gif" class="p"> <span id="l71" class="unselected">Print Colours Page</span></a></nobr></div>
+<div id="d71" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-print-colour-page.html" onclick="return LinkClick('72',false,true)" target="content" title="Add Print Colour Page" onmousemove="window.status='Add Print Colour Page'"><img src="icons/11.gif" class="p"> <span id="l72" class="unselected">Add Print Colour Page</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/update-print-colour-page.html" onclick="return LinkClick('73',false,true)" target="content" title="Update Print Colour Page" onmousemove="window.status='Update Print Colour Page'"><img src="icons/11.gif" class="p"> <span id="l73" class="unselected">Update Print Colour Page</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('74')"><img id="imgn74" src="icons/tplus.gif" class="p"></a><a href="pages/print-positions-page.html" onclick="return LinkClick('74',true,true)" onDblClick="return LinkDblClick('74')" target="content" title="Print Positions Page" onmousemove="window.status='Print Positions Page'"><img id="img74" src="icons/1.gif" class="p"> <span id="l74" class="unselected">Print Positions Page</span></a></nobr></div>
+<div id="d74" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-print-position-page.html" onclick="return LinkClick('75',false,true)" target="content" title="Add Print Position Page" onmousemove="window.status='Add Print Position Page'"><img src="icons/11.gif" class="p"> <span id="l75" class="unselected">Add Print Position Page</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/update-print-position-page.html" onclick="return LinkClick('76',false,true)" target="content" title="Update Print Position Page" onmousemove="window.status='Update Print Position Page'"><img src="icons/11.gif" class="p"> <span id="l76" class="unselected">Update Print Position Page</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('77')"><img id="imgn77" src="icons/uaplus.gif" class="p"></a><a href="pages/print-sides-page1.html" onclick="return LinkClick('77',true,true)" onDblClick="return LinkDblClick('77')" target="content" title="Print Sides Page" onmousemove="window.status='Print Sides Page'"><img id="img77" src="icons/1.gif" class="p"> <span id="l77" class="unselected">Print Sides Page</span></a></nobr></div>
+<div id="d77" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-print-side-page1.html" onclick="return LinkClick('78',false,true)" target="content" title="Add Print Side Page" onmousemove="window.status='Add Print Side Page'"><img src="icons/11.gif" class="p"> <span id="l78" class="unselected">Add Print Side Page</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/update-print-side-page1.html" onclick="return LinkClick('79',false,true)" target="content" title="Update Print Side Page" onmousemove="window.status='Update Print Side Page'"><img src="icons/11.gif" class="p"> <span id="l79" class="unselected">Update Print Side Page</span></a></nobr></div>
+</div></div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('80')"><img id="imgn80" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('80',true,false)" onDblClick="return LinkDblClick('80')" target="content" title="5.10 Manage Roles" onmousemove="window.status='5.10 Manage Roles'"><img id="img80" src="icons/1.gif" class="p"> <span id="l80" class="unselected">5.10 Manage Roles</span></a></nobr></div>
+<div id="d80" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/manage-roles-page.html" onclick="return LinkClick('81',false,true)" target="content" title="Manage Roles Page" onmousemove="window.status='Manage Roles Page'"><img src="icons/11.gif" class="p"> <span id="l81" class="unselected">Manage Roles Page</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('82',false,true)" target="content" title="Add New Role Page" onmousemove="window.status='Add New Role Page'"><img src="icons/11.gif" class="p"> <span id="l82" class="unselected">Add New Role Page</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/update-description-page.html" onclick="return LinkClick('83',false,true)" target="content" title="Update Description Page" onmousemove="window.status='Update Description Page'"><img src="icons/11.gif" class="p"> <span id="l83" class="unselected">Update Description Page</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('84')"><img id="imgn84" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('84',true,false)" onDblClick="return LinkDblClick('84')" target="content" title="5.11 Manage Business Rules Process" onmousemove="window.status='5.11 Manage Business Rules Process'"><img id="img84" src="icons/1.gif" class="p"> <span id="l84" class="unselected">5.11 Manage Business Rules Process</span></a></nobr></div>
+<div id="d84" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/manage-business-rules-details.html" onclick="return LinkClick('85',false,true)" target="content" title="Manage Business Rules Details" onmousemove="window.status='Manage Business Rules Details'"><img src="icons/11.gif" class="p"> <span id="l85" class="unselected">Manage Business Rules Details</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/update-profit-percentagein.html" onclick="return LinkClick('86',false,true)" target="content" title="Update Profit Percentage(In %)" onmousemove="window.status='Update Profit Percentage(In %)'"><img src="icons/11.gif" class="p"> <span id="l86" class="unselected">Update Profit Percentage(In %)</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/512-transaction-log.html" onclick="return LinkClick('87',false,true)" target="content" title="5.12 Transaction Log" onmousemove="window.status='5.12 Transaction Log'"><img src="icons/11.gif" class="p"> <span id="l87" class="unselected">5.12 Transaction Log</span></a></nobr></div>
+</div><div><nobr><img src="icons/tshaped.gif" class="p"><a href="pages/error-messages.html" onclick="return LinkClick('88',false,true)" target="content" title="Error Messages" onmousemove="window.status='Error Messages'"><img src="icons/11.gif" class="p"> <span id="l88" class="unselected">Error Messages</span></a></nobr></div>
+<div><nobr><img src="icons/tshaped.gif" class="p"><a href="pages/client-sign-off.html" onclick="return LinkClick('89',false,true)" target="content" title="Client Sign off" onmousemove="window.status='Client Sign off'"><img src="icons/11.gif" class="p"> <span id="l89" class="unselected">Client Sign off</span></a></nobr></div>
+<div><nobr><img src="icons/upangle.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('90',false,true)" target="content" title="Conclusion" onmousemove="window.status='Conclusion'"><img src="icons/11.gif" class="p"> <span id="l90" class="unselected">Conclusion</span></a></nobr></div>
+<script>divlist = [4,5,10,13,18,20,22,27,32,33,40,41,44,47,49,50,53,58,61,64,65,68,71,74,77,80,84]</script>
+</body>
+</html>
